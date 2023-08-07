@@ -1,28 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/03 13:04:18 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/07 17:19:16 by digoncal         ###   ########.fr       */
+/*   Created: 2023/08/07 15:55:53 by digoncal          #+#    #+#             */
+/*   Updated: 2023/08/07 15:55:53 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	main(int ac, char **av)
+int	check_input(char **av)
 {
-	t_data	*data;
+	int		i;
+	int		j;
+	long	tmp;
 
-	if ((ac != 5 && ac != 6) || check_input(av))
+	i = 0;
+	while (av[++i])
 	{
-		printf("Error: Invalid arguments\n");
-		return (0);
+		j = -1;
+		while (av[i][++j])
+		{
+			if (av[i][j] == '-')
+				return (1);
+			if (av[i][j] == '+')
+				j++;
+			if (av[i][j] && !ft_isdigit(av[i][j]))
+				return (1);
+		}
+		tmp = ft_atol(av[i]);
+		if (tmp < 0 || tmp > 4294967295)
+			return (1);
 	}
-	data = init_data(ac, av);
-	if (!data)
-		return (1);
-	free_data(data);
+	return (0);
 }

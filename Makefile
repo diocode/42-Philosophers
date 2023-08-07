@@ -11,12 +11,12 @@
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 LIBFT = libs/libft/libft.a
 
 NAME = philo
 
-SRC = src/main.c
+SRC = src/main.c src/init.c src/free.c src/utils.c
 
 OBJ = $(SRC:.c=.o)
 
@@ -26,7 +26,7 @@ deps:
 	$(MAKE) -C ./libs/libft
 	
 $(NAME): $(OBJ) $(DEPS)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) -pthread $(OBJ) $(LIBFT) -o $(NAME)
 
 clean:
 	$(MAKE) $@ -C ./libs/libft
