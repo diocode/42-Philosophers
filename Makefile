@@ -12,29 +12,22 @@
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
-LIBFT = libs/libft/libft.a
 
 NAME = philo
 
-SRC = src/main.c src/init.c src/free.c src/utils.c
+SRC = src/main.c src/init.c src/utils.c
 
 OBJ = $(SRC:.c=.o)
 
-all: deps $(NAME)
+all: $(NAME)
 	
-deps:
-	$(MAKE) -C ./libs/libft
-	
-$(NAME): $(OBJ) $(DEPS)
-	$(CC) $(CFLAGS) -pthread $(OBJ) $(LIBFT) -o $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) -pthread $(OBJ) -o $(NAME)
 
 clean:
-	$(MAKE) $@ -C ./libs/libft
 	@rm -rf $(OBJ)
 
 fclean: clean
-	$(MAKE) $@ -C ./libs/libft
 	@rm -rf $(NAME)
 
 re: fclean all
-	$(MAKE) re -C ./libs/libft
