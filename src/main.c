@@ -12,16 +12,6 @@
 
 #include "../includes/philo.h"
 
-void	*routine(void *philo_ptr)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *) philo_ptr;
-	printf("PING[%ld]\n", philo->id);
-	philo->data->death = DEATH;
-	return (NULL);
-}
-
 static int	lonely_philo(t_data *data)
 {
 	data->start_t = get_time();
@@ -30,7 +20,7 @@ static int	lonely_philo(t_data *data)
 	if (pthread_create(&data->table[0], NULL, &routine, &data->philos[0]))
 		return (1);
 	pthread_detach(data->table[0]);
-	while (data->death == 0)
+	while (data->death != DEATH)
 		usleep(0);
 	return (0);
 }

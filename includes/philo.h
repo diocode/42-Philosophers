@@ -27,6 +27,7 @@
 # define EATING 2
 # define SLEEPING 3
 # define THINKING 4
+# define FORK 5
 
 /*------------- STRUCTURES ---------------*/
 
@@ -38,7 +39,7 @@ typedef struct s_philo
 	pthread_t		thread;
 	u_int64_t		id;
 	int				status;
-	int				meals;
+	u_int64_t		meals;
 	u_int64_t		death_t;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*r_fork;
@@ -55,12 +56,22 @@ typedef struct s_data
 	u_int64_t		sleep_t;
 	u_int64_t		n_meals;
 	u_int64_t		start_t;
+	u_int64_t		philos_full;
 	int				death;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 }					t_data;
 
 /*---------- FUNCTIONS ----------*/
+
+//activity
+void		logs(t_philo *philo, int status);
+void		get_forks(t_philo *philo);
+void		sleeping(t_philo *philo);
+void		eating(t_philo *philo);
+
+//routines
+void		*routine(void *philo_ptr);
 
 //utils
 int			check_input(char **av);

@@ -15,7 +15,7 @@ CFLAGS = -Wall -Wextra -Werror -g
 
 NAME = philo
 
-SRC = src/main.c src/init.c src/utils.c
+SRC = src/main.c src/init.c src/utils.c src/routines.c src/activity.c
 
 OBJ = $(SRC:.c=.o)
 
