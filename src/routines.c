@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routines.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*  By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/09 22:29:40 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/09 22:29:40 by digoncal         ###   ########.fr       */
+/*   Created: 2023/08/10 13:11:44 by digoncal          #+#    #+#             */
+/*   Updated: 2023/08/10 14:59:09 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@ static void	*check_status(void *philo_ptr)
 	while (!philo->data->death)
 	{
 		pthread_mutex_lock(&philo->lock);
+		//printf("TIME: %lu\nDEATH: %lu\nSTATUS: %d\n", get_time(), philo->death_t, philo->status);
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);
+		//printf("STATUS: %d\n", philo->status);
 		if (philo->meals == philo->data->n_meals)
 		{
 			pthread_mutex_lock(&philo->data->lock);

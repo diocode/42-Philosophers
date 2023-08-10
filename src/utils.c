@@ -93,6 +93,7 @@ void	free_data(t_data *data)
 		pthread_mutex_destroy(&data->philos[i].lock);
 	}
 	pthread_mutex_destroy(&data->lock);
+	pthread_mutex_destroy(&data->log);
 	if (data->table)
 		free(data->table);
 	if (data->philos)

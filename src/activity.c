@@ -14,7 +14,7 @@
 
 void	logs(t_philo *p, int status)
 {
-	pthread_mutex_lock(&p->data->lock);
+	pthread_mutex_lock(&p->data->log);
 	if (status == DEATH && !p->data->death)
 	{
 		printf("[%lu] %lu died\n", get_time() - p->data->start_t, p->id);
@@ -29,20 +29,22 @@ void	logs(t_philo *p, int status)
 	else if (status == FORK)
 		printf("[%lu] %lu has taken a fork\n",
 			get_time() - p->data->start_t, p->id);
-	pthread_mutex_unlock(&p->data->lock);
+	pthread_mutex_unlock(&p->data->log);
 }
 
 void	get_forks(t_philo *philo)
 {
 	pthread_mutex_lock(philo->r_fork);
 	logs(philo, FORK);
-	pthread_mutex_lock(philo->l_fork);
+	if (philo->r_fork != philo->l_fork)
+		pthread_mutex_lock(philo->l_fork);
 	logs(philo, FORK);
 }
 
 void	sleeping(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->l_fork);
+	if (philo->r_fork != philo->l_fork)
+		pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
 	logs(philo, SLEEPING);
 	usleep(philo->data->sleep_t);

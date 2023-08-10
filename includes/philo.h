@@ -60,6 +60,7 @@ typedef struct s_data
 	int				death;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
+	pthread_mutex_t	log;
 }					t_data;
 
 /*---------- FUNCTIONS ----------*/
