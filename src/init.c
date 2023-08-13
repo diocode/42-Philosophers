@@ -69,7 +69,7 @@ t_data	*init_data(int ac, char **av)
 	if (ac == 6)
 		data->n_meals = ft_atol(av[5]);
 	else
-		data->n_meals = -1;
+		data->n_meals = 0;
 	if (!data->n_philos || !data->death_t || !data->eat_t || !data->sleep_t)
 	{
 		free(data);

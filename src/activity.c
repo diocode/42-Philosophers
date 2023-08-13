@@ -15,7 +15,7 @@
 void	logs(t_philo *p, int status)
 {
 	pthread_mutex_lock(&p->data->log);
-	if (status == DEATH && !p->data->death)
+	if (status == DEATH && p->data->death != DEATH)
 	{
 		printf("[%lu] %lu died\n", get_time() - p->data->start_t, p->id);
 		p->data->death = DEATH;
@@ -32,15 +32,6 @@ void	logs(t_philo *p, int status)
 	pthread_mutex_unlock(&p->data->log);
 }
 
-void	get_forks(t_philo *philo)
-{
-	pthread_mutex_lock(philo->r_fork);
-	logs(philo, FORK);
-	if (philo->r_fork != philo->l_fork)
-		pthread_mutex_lock(philo->l_fork);
-	logs(philo, FORK);
-}
-
 void	sleeping(t_philo *philo)
 {
 	if (philo->r_fork != philo->l_fork)
@@ -52,7 +43,15 @@ void	sleeping(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
-	get_forks(philo);
+	pthread_mutex_lock(philo->r_fork);
+	logs(philo, FORK);
+	if (philo->r_fork != philo->l_fork)
+	{
+		pthread_mutex_lock(philo->l_fork);
+		logs(philo, FORK);
+	}
+	else
+		return ;
 	pthread_mutex_lock(&philo->lock);
 	logs(philo, EATING);
 	philo->meals++;

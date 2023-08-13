@@ -19,12 +19,10 @@ static void	*check_status(void *philo_ptr)
 	philo = (t_philo *) philo_ptr;
 	while (!philo->data->death)
 	{
-		pthread_mutex_lock(&philo->lock);
-		//printf("TIME: %lu\nDEATH: %lu\nSTATUS: %d\n", get_time(), philo->death_t, philo->status);
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);
-		//printf("STATUS: %d\n", philo->status);
-		if (philo->meals == philo->data->n_meals)
+		pthread_mutex_lock(&philo->lock);
+		if (philo->meals == philo->data->n_meals && philo->meals != 0)
 		{
 			pthread_mutex_lock(&philo->data->lock);
 			philo->meals++;
@@ -42,7 +40,7 @@ void	*routine(void *philo_ptr)
 
 	philo = (t_philo *) philo_ptr;
 	philo->death_t = philo->data->death_t + get_time();
-	if (pthread_create(&philo->thread, NULL, &check_status, &philo))
+	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	while (philo->data->death != DEATH)
 	{

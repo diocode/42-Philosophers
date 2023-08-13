@@ -67,7 +67,6 @@ typedef struct s_data
 
 //activity
 void		logs(t_philo *philo, int status);
-void		get_forks(t_philo *philo);
 void		sleeping(t_philo *philo);
 void		eating(t_philo *philo);
 
