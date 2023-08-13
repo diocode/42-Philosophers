@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:11:44 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/10 14:59:09 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/13 18:16:07 by logname          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,12 @@ static void	*check_status(void *philo_ptr)
 			philo->meals++;
 			philo->data->philos_full++;
 			pthread_mutex_unlock(&philo->data->lock);
+		}
+		if (philo->data->philos_full == philo->data->n_philos)
+		{
+			pthread_mutex_lock(&philo->data->log);
+			philo->data->death = DEATH;
+			pthread_mutex_unlock(&philo->data->log);
 		}
 		pthread_mutex_unlock(&philo->lock);
 	}
