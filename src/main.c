@@ -16,7 +16,6 @@ static int	reunion(t_data *data)
 {
 	u_int64_t	n;
 
-
 	data->start_t = get_time();
 	if (data->start_t == 0)
 		return (1);
@@ -44,9 +43,10 @@ static int	lonely_philo(t_data *data)
 		return (1);
 	if (pthread_create(&data->table[0], NULL, &routine, &data->philos[0]))
 		return (1);
-	pthread_detach(data->table[0]);
 	while (data->death != DEATH)
 		usleep(0);
+	if (pthread_join(data->table[0], NULL))
+		return (1);
 	return (0);
 }
 
@@ -70,6 +70,7 @@ int	main(int ac, char **av)
 	else
 		reunion(data);
 	free_data(data);
+	//usleep(100);
 }
 
 /*
@@ -80,4 +81,7 @@ int	main(int ac, char **av)
  * - Check if it's ok for the inputs to show up after the died or full message
  * 	 (it should be oh because the threads are running at the same time);
  * - Check if the program is working when: none die | philo dies | meals completed
+ *
+ * LEAKS:
+ * - "1 1 1 1"
  * */

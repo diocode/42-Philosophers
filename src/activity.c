@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/09 23:31:26 by logname          ###   ########.fr       */
+/*   Updated: 2023/08/14 17:07:14 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,20 @@ void	logs(t_philo *p, int status)
 	pthread_mutex_lock(&p->data->log);
 	if (status == DEATH && p->data->death != DEATH)
 	{
-		printf("[%lu] %lu died\n", get_time() - p->data->start_t, p->id);
+		printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
 		p->data->death = DEATH;
+		pthread_mutex_unlock(p->l_fork);
+		pthread_mutex_unlock(p->r_fork);
+		pthread_mutex_unlock(&p->lock);
 	}
-	else if (status == EATING)
-		printf("[%lu] %lu is eating\n", get_time() - p->data->start_t, p->id);
-	else if (status == SLEEPING)
-		printf("[%lu] %lu is sleeping\n", get_time() - p->data->start_t, p->id);
-	else if (status == THINKING)
-		printf("[%lu] %lu is thinking\n", get_time() - p->data->start_t, p->id);
-	else if (status == FORK)
-		printf("[%lu] %lu has taken a fork\n",
+	else if (status == EATING && p->data->death != DEATH)
+		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
+	else if (status == SLEEPING && p->data->death != DEATH)
+		printf("%lu %lu is sleeping\n", get_time() - p->data->start_t, p->id);
+	else if (status == THINKING && p->data->death != DEATH)
+		printf("%lu %lu is thinking\n", get_time() - p->data->start_t, p->id);
+	else if (status == FORK && p->data->death != DEATH)
+		printf("%lu %lu has taken a fork\n",
 			get_time() - p->data->start_t, p->id);
 	pthread_mutex_unlock(&p->data->log);
 }

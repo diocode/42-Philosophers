@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 15:55:53 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/07 15:55:53 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/14 16:50:02 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ u_int64_t	get_time(void)
 
 	if (gettimeofday(&t, NULL))
 	{
-		error(NULL, "ERROR: gettimeofday()");
+		printf("ERROR: gettimeofday()");
 		return (0);
 	}
 	return ((t.tv_sec * 1000) + (t.tv_usec / 1000));
@@ -71,13 +71,6 @@ int	check_input(char **av)
 			return (1);
 	}
 	return (0);
-}
-
-void	error(t_data *data, char *str)
-{
-	printf("%s\n", str);
-	if (data)
-		free_data(data);
 }
 
 void	free_data(t_data *data)

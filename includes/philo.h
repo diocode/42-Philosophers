@@ -78,7 +78,6 @@ int			check_input(char **av);
 void		free_data(t_data *data);
 long		ft_atol(const char *nptr);
 u_int64_t	get_time(void);
-void		error(t_data *data, char *str);
 
 //init
 t_data		*init_data(int ac, char **av);

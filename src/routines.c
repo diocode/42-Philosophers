@@ -17,7 +17,7 @@ static void	*check_status(void *philo_ptr)
 	t_philo	*philo;
 
 	philo = (t_philo *) philo_ptr;
-	while (!philo->data->death)
+	while (philo->data->death != DEATH)
 	{
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);

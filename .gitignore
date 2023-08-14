@@ -1,7 +1,7 @@
 # Prerequisites
 *.d
 
-*.nfs
+*.nfs*
 
 # Object files
 *.o
