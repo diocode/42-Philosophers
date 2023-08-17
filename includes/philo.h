@@ -28,6 +28,7 @@
 # define SLEEPING 3
 # define THINKING 4
 # define FORK 5
+# define FULL 6
 
 /*------------- STRUCTURES ---------------*/
 
@@ -61,12 +62,13 @@ typedef struct s_data
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;
+	pthread_mutex_t	lock_log;
 }					t_data;
 
 /*---------- FUNCTIONS ----------*/
 
 //activity
-void		logs(t_philo *philo, int status);
+void		logs(void *philo_ptr, int status);
 void		sleeping(t_philo *philo);
 void		eating(t_philo *philo);
 

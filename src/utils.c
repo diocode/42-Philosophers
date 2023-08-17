@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/07 15:55:53 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/14 16:50:02 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/17 17:11:48 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	free_data(t_data *data)
 	}
 	pthread_mutex_destroy(&data->lock);
 	pthread_mutex_destroy(&data->log);
+	pthread_mutex_destroy(&data->lock_log);
 	if (data->table)
 		free(data->table);
 	if (data->philos)

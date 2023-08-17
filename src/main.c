@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 13:04:18 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/08 18:05:31 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/17 17:11:49 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static int	reunion(t_data *data)
 	data->start_t = get_time();
 	if (data->start_t == 0)
 		return (1);
+	pthread_mutex_lock(&data->lock);
 	n = 0;
 	while (n < data->n_philos)
 	{
@@ -26,6 +27,7 @@ static int	reunion(t_data *data)
 			return (1);
 		n++;
 	}
+	pthread_mutex_unlock(&data->lock);
 	n = 0;
 	while (n < data->n_philos)
 	{
@@ -33,20 +35,6 @@ static int	reunion(t_data *data)
 			return (1);
 		n++;
 	}
-	return (0);
-}
-
-static int	lonely_philo(t_data *data)
-{
-	data->start_t = get_time();
-	if (data->start_t == 0)
-		return (1);
-	if (pthread_create(&data->table[0], NULL, &routine, &data->philos[0]))
-		return (1);
-	while (data->death != DEATH)
-		usleep(0);
-	if (pthread_join(data->table[0], NULL))
-		return (1);
 	return (0);
 }
 
@@ -65,12 +53,8 @@ int	main(int ac, char **av)
 		free_data(data);
 		return (1);
 	}
-	if (data->n_philos == 1)
-		lonely_philo(data);
-	else
-		reunion(data);
+	reunion(data);
 	free_data(data);
-	//usleep(100);
 }
 
 /*

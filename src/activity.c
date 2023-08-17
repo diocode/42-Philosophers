@@ -6,22 +6,25 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/14 17:07:14 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/17 16:47:49 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	logs(t_philo *p, int status)
+void	logs(void *philo_ptr, int status)
 {
+	t_philo	*p;
+
+	p = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&p->data->log);
-	if (status == DEATH && p->data->death != DEATH)
+	if ((status == DEATH || status == FULL) && p->data->death != DEATH)
 	{
-		printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
+		if (status == DEATH)
+			printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
 		p->data->death = DEATH;
 		pthread_mutex_unlock(p->l_fork);
 		pthread_mutex_unlock(p->r_fork);
-		pthread_mutex_unlock(&p->lock);
 	}
 	else if (status == EATING && p->data->death != DEATH)
 		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
