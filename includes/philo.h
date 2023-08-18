@@ -62,7 +62,6 @@ typedef struct s_data
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;
-	pthread_mutex_t	lock_log;
 }					t_data;
 
 /*---------- FUNCTIONS ----------*/

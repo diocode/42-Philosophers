@@ -49,7 +49,6 @@ static t_data	*init_threads(t_data *data)
 		return (NULL);
 	pthread_mutex_init(&data->lock, NULL);
 	pthread_mutex_init(&data->log, NULL);
-	pthread_mutex_init(&data->lock_log, NULL);
 	i = 0;
 	while (i < data->n_philos)
 		pthread_mutex_init(&data->forks[i++], NULL);

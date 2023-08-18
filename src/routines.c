@@ -52,7 +52,7 @@ void	*routine(void *philo_ptr)
 
 	philo = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&philo->lock);
-	philo->death_t = philo->data->death_t + get_time();
+	philo->death_t = get_time() + philo->data->death_t;
 	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	pthread_mutex_unlock(&philo->lock);

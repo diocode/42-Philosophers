@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/17 16:47:49 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/18 17:50:13 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	eating(t_philo *philo)
 	philo->status = EATING;
 	usleep(philo->data->eat_t);
 	philo->status = 0;
+	philo->death_t = get_time() + philo->data->death_t;
 	pthread_mutex_unlock(&philo->lock);
 	sleeping(philo);
 }
