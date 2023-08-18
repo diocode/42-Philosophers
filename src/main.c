@@ -56,16 +56,3 @@ int	main(int ac, char **av)
 	reunion(data);
 	free_data(data);
 }
-
-/*
- * NOTES:
- * - Check valgrind and leaks;
- * - Check unusual arguments;
- * - Check if my time output is in the correct format;
- * - Check if it's ok for the inputs to show up after the died or full message
- * 	 (it should be oh because the threads are running at the same time);
- * - Check if the program is working when: none die | philo dies | meals completed
- *
- * LEAKS:
- * - "1 1 1 1"
- * */

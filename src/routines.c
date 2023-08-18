@@ -6,11 +6,19 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:11:44 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/17 18:06:45 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/18 12:44:41 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+static void	philo_full(t_philo	*philo)
+{
+	pthread_mutex_lock(&philo->data->lock);
+	philo->meals++;
+	philo->data->philos_full++;
+	pthread_mutex_unlock(&philo->data->lock);
+}
 
 static void	*check_status(void *philo_ptr)
 {
@@ -25,14 +33,11 @@ static void	*check_status(void *philo_ptr)
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);
 		if (philo->meals == philo->data->n_meals && philo->meals != 0)
-		{
-			pthread_mutex_lock(&philo->data->lock);
-			philo->meals++;
-			philo->data->philos_full++;
-			pthread_mutex_unlock(&philo->data->lock);
-		}
+			philo_full(philo);
+		pthread_mutex_lock(&philo->data->lock);
 		if (philo->data->philos_full == philo->data->n_philos)
 			logs(philo, FULL);
+		pthread_mutex_unlock(&philo->data->lock);
 		pthread_mutex_unlock(&philo->lock);
 		pthread_mutex_lock(&philo->data->log);
 	}
@@ -51,7 +56,6 @@ void	*routine(void *philo_ptr)
 	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	pthread_mutex_unlock(&philo->lock);
-	pthread_mutex_lock(&philo->data->lock);
 	pthread_mutex_lock(&philo->data->log);
 	death = philo->data->death;
 	pthread_mutex_unlock(&philo->data->log);
@@ -63,7 +67,6 @@ void	*routine(void *philo_ptr)
 		death = philo->data->death;
 		pthread_mutex_unlock(&philo->data->log);
 	}
-	pthread_mutex_unlock(&philo->data->lock);
 	if (pthread_join(philo->thread, NULL))
 		return (NULL);
 	return (NULL);
