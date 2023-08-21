@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/18 17:50:13 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/21 14:04:55 by logname          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,27 @@ void	logs(void *philo_ptr, int status)
 
 void	sleeping(t_philo *philo)
 {
-	if (philo->r_fork != philo->l_fork)
-		pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->l_fork);
 	pthread_mutex_unlock(philo->r_fork);
 	logs(philo, SLEEPING);
-	usleep(philo->data->sleep_t);
+	usleep(philo->data->sleep_t * 1000);
 }
 
 void	eating(t_philo *philo)
 {
 	pthread_mutex_lock(philo->r_fork);
 	logs(philo, FORK);
-	if (philo->r_fork != philo->l_fork)
-	{
-		pthread_mutex_lock(philo->l_fork);
-		logs(philo, FORK);
-	}
-	else
+	if (philo->data->n_philos == 1)
 		return ;
+	pthread_mutex_lock(philo->l_fork);
+	logs(philo, FORK);
 	pthread_mutex_lock(&philo->lock);
 	logs(philo, EATING);
 	philo->meals++;
 	philo->status = EATING;
-	usleep(philo->data->eat_t);
-	philo->status = 0;
 	philo->death_t = get_time() + philo->data->death_t;
+	usleep(philo->data->eat_t * 1000);
+	philo->status = 0;
 	pthread_mutex_unlock(&philo->lock);
 	sleeping(philo);
 }

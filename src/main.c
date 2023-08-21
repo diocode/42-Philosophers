@@ -25,6 +25,7 @@ static int	reunion(t_data *data)
 	{
 		if (pthread_create(&data->table[n], NULL, &routine, &data->philos[n]))
 			return (1);
+		usleep(100);
 		n++;
 	}
 	pthread_mutex_unlock(&data->lock);
