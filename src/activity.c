@@ -38,14 +38,6 @@ void	logs(void *philo_ptr, int status)
 	pthread_mutex_unlock(&p->data->log);
 }
 
-void	sleeping(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_unlock(philo->r_fork);
-	logs(philo, SLEEPING);
-	usleep(philo->data->sleep_t * 1000);
-}
-
 void	eating(t_philo *philo)
 {
 	pthread_mutex_lock(philo->r_fork);
@@ -61,6 +53,9 @@ void	eating(t_philo *philo)
 	philo->death_t = get_time() + philo->data->death_t;
 	usleep(philo->data->eat_t * 1000);
 	philo->status = 0;
+	pthread_mutex_unlock(philo->l_fork);
+	pthread_mutex_unlock(philo->r_fork);
+	logs(philo, SLEEPING);
+	usleep(philo->data->sleep_t * 1000);
 	pthread_mutex_unlock(&philo->lock);
-	sleeping(philo);
 }

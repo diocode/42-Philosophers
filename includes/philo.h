@@ -68,7 +68,6 @@ typedef struct s_data
 
 //activity
 void		logs(void *philo_ptr, int status);
-void		sleeping(t_philo *philo);
 void		eating(t_philo *philo);
 
 //routines
