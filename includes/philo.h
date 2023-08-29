@@ -20,15 +20,18 @@
 # include <sys/time.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdbool.h>
 
 /* ---------- MACROS ---------- */
 
-# define DEATH 1
-# define EATING 2
-# define SLEEPING 3
-# define THINKING 4
-# define FORK 5
-# define FULL 6
+enum e_actions{
+	DEATH,
+	EATING,
+	SLEEPING,
+	THINKING,
+	FORK,
+	FULL
+};
 
 /*------------- STRUCTURES ---------------*/
 
@@ -58,7 +61,7 @@ typedef struct s_data
 	u_int64_t		n_meals;
 	u_int64_t		start_t;
 	u_int64_t		philos_full;
-	int				death;
+	bool			finish;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;

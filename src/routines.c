@@ -12,6 +12,15 @@
 
 #include "../includes/philo.h"
 
+static void	thinking(t_philo *philo)
+{
+	if (!(philo->id % 2))
+	{
+		logs(philo, THINKING);
+		usleep(100);
+	}
+}
+
 static void	philo_full(t_philo	*philo)
 {
 	pthread_mutex_lock(&philo->data->lock);
@@ -26,7 +35,7 @@ static void	*check_status(void *philo_ptr)
 
 	philo = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&philo->data->log);
-	while (philo->data->death != DEATH)
+	while (!philo->data->finish)
 	{
 		pthread_mutex_unlock(&philo->data->log);
 		pthread_mutex_lock(&philo->lock);
@@ -34,7 +43,9 @@ static void	*check_status(void *philo_ptr)
 			logs(philo, DEATH);
 		if (philo->meals == philo->data->n_meals && philo->meals != 0)
 			philo_full(philo);
+		pthread_mutex_unlock(&philo->lock);
 		pthread_mutex_lock(&philo->data->lock);
+		pthread_mutex_lock(&philo->lock);
 		if (philo->data->philos_full == philo->data->n_philos)
 			logs(philo, FULL);
 		pthread_mutex_unlock(&philo->data->lock);
@@ -48,24 +59,18 @@ static void	*check_status(void *philo_ptr)
 void	*routine(void *philo_ptr)
 {
 	t_philo	*philo;
-	int		death;
 
 	philo = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&philo->lock);
 	philo->death_t = get_time() + philo->data->death_t;
+	thinking(philo);
 	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	pthread_mutex_unlock(&philo->lock);
-	pthread_mutex_lock(&philo->data->log);
-	death = philo->data->death;
-	pthread_mutex_unlock(&philo->data->log);
-	while (death != DEATH)
+	while (!philo->data->finish)
 	{
 		eating(philo);
 		logs(philo, THINKING);
-		pthread_mutex_lock(&philo->data->log);
-		death = philo->data->death;
-		pthread_mutex_unlock(&philo->data->log);
 	}
 	if (pthread_join(philo->thread, NULL))
 		return (NULL);
