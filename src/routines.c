@@ -65,11 +65,15 @@ void	*routine(void *philo_ptr)
 	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	pthread_mutex_unlock(&philo->lock);
+	pthread_mutex_lock(&philo->data->finish_lock);
 	while (!philo->data->finish)
 	{
+		pthread_mutex_unlock(&philo->data->finish_lock);
 		eating(philo);
 		logs(philo, THINKING);
+		pthread_mutex_lock(&philo->data->finish_lock);
 	}
+	pthread_mutex_unlock(&philo->data->finish_lock);
 	if (pthread_join(philo->thread, NULL))
 		return (NULL);
 	return (NULL);

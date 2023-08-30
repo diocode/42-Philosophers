@@ -15,28 +15,24 @@
 void	logs(t_philo *p, int status)
 {
 	pthread_mutex_lock(&p->data->finish_lock);
-	if (p->data->finish)
-		return ;
-	pthread_mutex_unlock(&p->data->finish_lock);
 	pthread_mutex_lock(&p->data->log);
-	if ((status == DEATH || status == FULL))
+	if ((status == DEATH || status == FULL) && !p->data->finish)
 	{
 		if (status == DEATH)
 			printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
-		pthread_mutex_lock(&p->data->finish_lock);
 		p->data->finish = true;
-		pthread_mutex_unlock(&p->data->finish_lock);
 	}
-	else if (status == EATING)
+	else if (status == EATING && !p->data->finish)
 		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
-	else if (status == SLEEPING)
+	else if (status == SLEEPING && !p->data->finish)
 		printf("%lu %lu is sleeping\n", get_time() - p->data->start_t, p->id);
-	else if (status == THINKING)
+	else if (status == THINKING && !p->data->finish)
 		printf("%lu %lu is thinking\n", get_time() - p->data->start_t, p->id);
-	else if (status == FORK)
+	else if (status == FORK && !p->data->finish)
 		printf("%lu %lu has taken a fork\n",
 			get_time() - p->data->start_t, p->id);
 	pthread_mutex_unlock(&p->data->log);
+	pthread_mutex_unlock(&p->data->finish_lock);
 }
 
 static bool	get_forks(t_philo *philo)
@@ -68,14 +64,15 @@ static bool	get_forks(t_philo *philo)
 
 static void	sleeping(t_philo *philo)
 {
-	if (philo->data->finish)
-		printf("==== PHILO[%lu]====\n", philo->id);
 	pthread_mutex_lock(&philo->data->finish_lock);
 	if (philo->data->finish)
+	{
+		pthread_mutex_unlock(&philo->data->finish_lock);
 		return ;
+	}
 	pthread_mutex_unlock(&philo->data->finish_lock);
 	logs(philo, SLEEPING);
-	usleep(philo->data->sleep_t * 1000);
+	wait_time(philo, philo->data->sleep_t);
 }
 
 void	eating(t_philo *philo)
@@ -95,7 +92,7 @@ void	eating(t_philo *philo)
 	philo->status = EATING;
 	logs(philo, EATING);
 	philo->death_t = get_time() + philo->data->death_t;
-	usleep(philo->data->eat_t * 1000);
+	wait_time(philo, philo->data->eat_t);
 	philo->status = 0;
 	philo->meals++;
 	pthread_mutex_unlock(philo->l_fork);

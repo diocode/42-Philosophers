@@ -83,6 +83,7 @@ int			check_input(char **av);
 void		free_data(t_data *data);
 long		ft_atol(const char *nptr);
 u_int64_t	get_time(void);
+void		wait_time(t_philo *philo, u_int64_t time);
 
 //init
 t_data		*init_data(int ac, char **av);
