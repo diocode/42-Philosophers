@@ -24,6 +24,7 @@ static void	init_philos(t_data *data)
 		data->philos[i].id = i + 1;
 		data->philos[i].meals = 0;
 		data->philos[i].status = 0;
+		data->philos[i].full = false;
 		data->philos[i].death_t = data->death_t;
 		pthread_mutex_init(&data->philos[i].lock, NULL);
 	}
@@ -49,6 +50,7 @@ static t_data	*init_threads(t_data *data)
 		return (NULL);
 	pthread_mutex_init(&data->lock, NULL);
 	pthread_mutex_init(&data->log, NULL);
+	pthread_mutex_init(&data->finish_lock, NULL);
 	i = 0;
 	while (i < data->n_philos)
 		pthread_mutex_init(&data->forks[i++], NULL);

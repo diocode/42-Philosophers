@@ -45,6 +45,7 @@ typedef struct s_philo
 	int				status;
 	u_int64_t		meals;
 	u_int64_t		death_t;
+	bool			full;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*r_fork;
 	pthread_mutex_t	*l_fork;
@@ -65,12 +66,13 @@ typedef struct s_data
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;
+	pthread_mutex_t	finish_lock;
 }					t_data;
 
 /*---------- FUNCTIONS ----------*/
 
 //activity
-void		logs(void *philo_ptr, int status);
+void		logs(t_philo *p, int status);
 void		eating(t_philo *philo);
 
 //routines

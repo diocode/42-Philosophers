@@ -11,8 +11,8 @@
 # **************************************************************************** #
 
 CC = cc
-CFLAGS = -g -Wall -Wextra -Werror -L. -lpthread -g3 -fsanitize=thread -O3 -march=native
-
+#CFLAGS = -g -Wall -Wextra -Werror -L. -lpthread -g3 -fsanitize=thread -O3 -march=native
+CFLAGS = -Wall -Wextra -Werror -g
 NAME = philo
 
 SRC = src/main.c src/init.c src/utils.c src/routines.c src/activity.c
