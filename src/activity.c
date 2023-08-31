@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/31 02:00:43 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/31 12:56:08 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	logs(t_philo *p, int status)
 {
 	pthread_mutex_lock(&p->data->finish_lock);
 	pthread_mutex_lock(&p->data->log);
+	p->status = status;
 	if ((status == DEATH || status == FULL) && !p->data->finish)
 	{
 		if (status == DEATH)
@@ -78,6 +79,13 @@ static void	sleeping(t_philo *philo)
 
 void	eating(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->data->finish_lock);
+	if (philo->data->finish)
+	{
+		pthread_mutex_unlock(&philo->data->finish_lock);
+		return ;
+	}
+	pthread_mutex_unlock(&philo->data->finish_lock);
 	if (!get_forks(philo))
 		return ;
 	pthread_mutex_lock(&philo->data->finish_lock);

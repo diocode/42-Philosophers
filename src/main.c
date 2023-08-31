@@ -12,6 +12,20 @@
 
 #include "../includes/philo.h"
 
+/*static int	solo(t_data *data)
+{
+	data->start_t = get_time();
+	if (data->start_t == 0)
+		return (1);
+	if (pthread_create(&data->table[0], NULL, &routine, &data->philos[0]))
+		return (1);
+	pthread_detach(data->table[0]);
+	while (!data->finish)
+		usleep(0);
+	free_data(data);
+	return (0);
+}*/
+
 static int	reunion(t_data *data)
 {
 	u_int64_t	n;
@@ -53,6 +67,8 @@ int	main(int ac, char **av)
 		free_data(data);
 		return (1);
 	}
+/*	if (data->n_philos == 1)
+		return (solo(data));*/
 	reunion(data);
 	free_data(data);
 }

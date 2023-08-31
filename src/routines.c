@@ -71,7 +71,8 @@ void	*routine(void *philo_ptr)
 	{
 		pthread_mutex_unlock(&philo->data->finish_lock);
 		eating(philo);
-		logs(philo, THINKING);
+		if (philo->status != THINKING)
+			logs(philo, THINKING);
 		pthread_mutex_lock(&philo->data->finish_lock);
 	}
 	pthread_mutex_unlock(&philo->data->finish_lock);
