@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:11:44 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/29 21:48:55 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/30 22:40:23 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ static void	*check_status(void *philo_ptr)
 		pthread_mutex_lock(&philo->lock);
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);
-		if (philo->meals >= philo->data->n_meals && philo->data->n_meals != 0)
+		if (philo->meals >= philo->data->n_meals
+			&& philo->data->n_meals != 0 && !philo->full)
 			philo_full(philo);
 		pthread_mutex_lock(&philo->data->lock);
 		if (philo->data->philos_full == philo->data->n_philos)

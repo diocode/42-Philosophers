@@ -63,6 +63,7 @@ typedef struct s_data
 	u_int64_t		start_t;
 	u_int64_t		philos_full;
 	bool			finish;
+	bool			solo_philo;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;

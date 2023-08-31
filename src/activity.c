@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/21 14:04:55 by logname          ###   ########.fr       */
+/*   Updated: 2023/08/31 02:00:43 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	logs(t_philo *p, int status)
 		if (status == DEATH)
 			printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
 		p->data->finish = true;
+		pthread_mutex_unlock(p->r_fork);
 	}
 	else if (status == EATING && !p->data->finish)
 		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);

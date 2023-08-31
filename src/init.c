@@ -43,6 +43,7 @@ static t_data	*init_threads(t_data *data)
 	u_int64_t	i;
 
 	data->finish = false;
+	data->solo_philo = false;
 	data->philos_full = 0;
 	data->table = malloc(data->n_philos * sizeof(pthread_t));
 	data->forks = malloc(data->n_philos * sizeof(pthread_mutex_t));
