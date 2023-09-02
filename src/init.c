@@ -28,13 +28,13 @@ static void	init_philos(t_data *data)
 		data->philos[i].death_t = data->death_t;
 		pthread_mutex_init(&data->philos[i].lock, NULL);
 	}
-	data->philos[0].l_fork = &data->forks[0];
-	data->philos[0].r_fork = &data->forks[data->n_philos - 1];
+	data->philos[0].fork[1] = &data->forks[0];
+	data->philos[0].fork[0] = &data->forks[data->n_philos - 1];
 	i = 0;
 	while (++i < data->n_philos)
 	{
-		data->philos[i].l_fork = &data->forks[i];
-		data->philos[i].r_fork = &data->forks[i - 1];
+		data->philos[i].fork[1] = &data->forks[i];
+		data->philos[i].fork[0] = &data->forks[i - 1];
 	}
 }
 
@@ -43,6 +43,7 @@ static t_data	*init_threads(t_data *data)
 	u_int64_t	i;
 
 	data->finish = false;
+	data->solo = false;
 	data->philos_full = 0;
 	data->table = malloc(data->n_philos * sizeof(pthread_t));
 	data->forks = malloc(data->n_philos * sizeof(pthread_mutex_t));

@@ -6,20 +6,11 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/10 13:11:44 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/29 21:48:55 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/08/30 22:40:23 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
-
-static void	thinking(t_philo *philo)
-{
-	if (!(philo->id % 2))
-	{
-		logs(philo, THINKING);
-		usleep(100);
-	}
-}
 
 static void	philo_full(t_philo	*philo)
 {
@@ -41,7 +32,8 @@ static void	*check_status(void *philo_ptr)
 		pthread_mutex_lock(&philo->lock);
 		if (get_time() >= philo->death_t && philo->status != EATING)
 			logs(philo, DEATH);
-		if (philo->meals >= philo->data->n_meals && philo->data->n_meals != 0)
+		if (philo->meals >= philo->data->n_meals
+			&& philo->data->n_meals != 0 && !philo->full)
 			philo_full(philo);
 		pthread_mutex_lock(&philo->data->lock);
 		if (philo->data->philos_full == philo->data->n_philos)
@@ -61,12 +53,11 @@ void	*routine(void *philo_ptr)
 	philo = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&philo->lock);
 	philo->death_t = get_time() + philo->data->death_t;
-	thinking(philo);
 	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
 		return (NULL);
 	pthread_mutex_unlock(&philo->lock);
 	pthread_mutex_lock(&philo->data->finish_lock);
-	while (!philo->data->finish)
+	while (!philo->data->finish && !philo->data->solo)
 	{
 		pthread_mutex_unlock(&philo->data->finish_lock);
 		eating(philo);

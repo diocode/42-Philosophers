@@ -14,8 +14,8 @@
 
 void	wait_time(t_philo *philo, u_int64_t time)
 {
-	if ((get_time() + time) > philo->death_t)
-		usleep(philo->death_t * 1000);
+	if ((get_time() + time) >= philo->death_t)
+		usleep((philo->death_t - get_time()) * 1000);
 	else
 		usleep(time * 1000);
 }

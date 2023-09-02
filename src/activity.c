@@ -6,55 +6,35 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/21 14:04:55 by logname          ###   ########.fr       */
+/*   Updated: 2023/09/02 01:15:53 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	logs(t_philo *p, int status)
+static bool	solo(t_philo *philo)
 {
-	pthread_mutex_lock(&p->data->finish_lock);
-	pthread_mutex_lock(&p->data->log);
-	if ((status == DEATH || status == FULL) && !p->data->finish)
+	if (philo->data->n_philos == 1)
 	{
-		if (status == DEATH)
-			printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
-		p->data->finish = true;
+		pthread_mutex_lock(philo->fork[0]);
+		logs(philo, FORK);
+		pthread_mutex_unlock(philo->fork[0]);
+		pthread_mutex_lock(&philo->data->finish_lock);
+		philo->data->solo = true;
+		pthread_mutex_unlock(&philo->data->finish_lock);
+		return (true);
 	}
-	else if (status == EATING && !p->data->finish)
-		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
-	else if (status == SLEEPING && !p->data->finish)
-		printf("%lu %lu is sleeping\n", get_time() - p->data->start_t, p->id);
-	else if (status == THINKING && !p->data->finish)
-		printf("%lu %lu is thinking\n", get_time() - p->data->start_t, p->id);
-	else if (status == FORK && !p->data->finish)
-		printf("%lu %lu has taken a fork\n",
-			get_time() - p->data->start_t, p->id);
-	pthread_mutex_unlock(&p->data->log);
-	pthread_mutex_unlock(&p->data->finish_lock);
+	return (false);
 }
 
-static bool	get_forks(t_philo *philo)
+static bool	get_fork(t_philo *philo, int fork)
 {
-	pthread_mutex_lock(philo->r_fork);
+	pthread_mutex_lock(philo->fork[fork]);
 	pthread_mutex_lock(&philo->data->finish_lock);
 	if (philo->data->finish)
 	{
 		pthread_mutex_unlock(&philo->data->finish_lock);
-		pthread_mutex_unlock(philo->r_fork);
-		return (false);
-	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
-	logs(philo, FORK);
-	if (philo->data->n_philos == 1)
-		return (false);
-	pthread_mutex_lock(philo->l_fork);
-	pthread_mutex_lock(&philo->data->finish_lock);
-	if (philo->data->finish)
-	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
-		pthread_mutex_unlock(philo->l_fork);
+		pthread_mutex_unlock(philo->fork[fork]);
 		return (false);
 	}
 	pthread_mutex_unlock(&philo->data->finish_lock);
@@ -62,8 +42,35 @@ static bool	get_forks(t_philo *philo)
 	return (true);
 }
 
+//right_fork = 0 | left_fork = 1
+static bool	get_forks(t_philo *philo)
+{
+	int	fork1;
+	int	fork2;
+
+	fork1 = 1;
+	fork2 = 0;
+	if (solo(philo))
+		return (false);
+	if (philo->id % 2 == 0)
+	{
+		fork1 = 0;
+		fork2 = 1;
+	}
+	if (!get_fork(philo, fork1))
+		return (false);
+	if (!get_fork(philo, fork2))
+	{
+		pthread_mutex_unlock(philo->fork[fork1]);
+		return (false);
+	}
+	return (true);
+}
+
 static void	sleeping(t_philo *philo)
 {
+	pthread_mutex_unlock(philo->fork[1]);
+	pthread_mutex_unlock(philo->fork[0]);
 	pthread_mutex_lock(&philo->data->finish_lock);
 	if (philo->data->finish)
 	{
@@ -79,15 +86,6 @@ void	eating(t_philo *philo)
 {
 	if (!get_forks(philo))
 		return ;
-	pthread_mutex_lock(&philo->data->finish_lock);
-	if (philo->data->finish)
-	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
-		pthread_mutex_unlock(philo->l_fork);
-		pthread_mutex_unlock(philo->r_fork);
-		return ;
-	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
 	pthread_mutex_lock(&philo->lock);
 	philo->status = EATING;
 	logs(philo, EATING);
@@ -95,8 +93,6 @@ void	eating(t_philo *philo)
 	wait_time(philo, philo->data->eat_t);
 	philo->status = 0;
 	philo->meals++;
-	pthread_mutex_unlock(philo->l_fork);
-	pthread_mutex_unlock(philo->r_fork);
 	pthread_mutex_unlock(&philo->lock);
 	sleeping(philo);
 }
