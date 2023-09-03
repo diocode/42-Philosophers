@@ -12,38 +12,21 @@
 
 #include "../includes/philo.h"
 
-static void	philo_full(t_philo	*philo)
+void	logs(t_philo *p, int status)
 {
-	pthread_mutex_lock(&philo->data->lock);
-	philo->data->philos_full++;
-	pthread_mutex_unlock(&philo->data->lock);
-	philo->full = true;
-}
-
-static void	*check_status(void *philo_ptr)
-{
-	t_philo	*philo;
-
-	philo = (t_philo *) philo_ptr;
-	pthread_mutex_lock(&philo->data->finish_lock);
-	while (!philo->data->finish)
-	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
-		pthread_mutex_lock(&philo->lock);
-		if (get_time() >= philo->death_t && philo->status != EATING)
-			logs(philo, DEATH);
-		if (philo->meals >= philo->data->n_meals
-			&& philo->data->n_meals != 0 && !philo->full)
-			philo_full(philo);
-		pthread_mutex_lock(&philo->data->lock);
-		if (philo->data->philos_full == philo->data->n_philos)
-			logs(philo, FULL);
-		pthread_mutex_unlock(&philo->data->lock);
-		pthread_mutex_unlock(&philo->lock);
-		pthread_mutex_lock(&philo->data->finish_lock);
-	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
-	return (NULL);
+	pthread_mutex_lock(&p->data->log);
+	if (status == DEATH)
+		printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
+	else if (status == EATING)
+		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
+	else if (status == SLEEPING)
+		printf("%lu %lu is sleeping\n", get_time() - p->data->start_t, p->id);
+	else if (status == THINKING)
+		printf("%lu %lu is thinking\n", get_time() - p->data->start_t, p->id);
+	else if (status == FORK)
+		printf("%lu %lu has taken a fork\n",
+			get_time() - p->data->start_t, p->id);
+	pthread_mutex_unlock(&p->data->log);
 }
 
 void	*routine(void *philo_ptr)
@@ -52,25 +35,19 @@ void	*routine(void *philo_ptr)
 
 	philo = (t_philo *) philo_ptr;
 	pthread_mutex_lock(&philo->lock);
-	philo->death_t = get_time() + philo->data->death_t;
-	if (pthread_create(&philo->thread, NULL, &check_status, philo_ptr))
-		return (NULL);
+	philo->death_t = philo->data->start_t + philo->data->death_t;
 	pthread_mutex_unlock(&philo->lock);
-	pthread_mutex_lock(&philo->data->finish_lock);
-	while (!philo->data->finish && !philo->data->solo)
-	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
-		if (philo->id % 2 != 0)
-		{
-			logs(philo, THINKING);
-			wait_time(philo, 1);
-		}
-		eating(philo);
-		logs(philo, THINKING);
-		pthread_mutex_lock(&philo->data->finish_lock);
-	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
-	if (pthread_join(philo->thread, NULL))
+	if (philo->id % 2 == 0)
+		thinking(philo);
+	if (is_solo(philo))
 		return (NULL);
+	while (!is_dead(philo))
+	{
+		eating(philo);
+		if (!is_dead(philo))
+			sleeping(philo);
+		if (!is_dead(philo))
+			thinking(philo);
+	}
 	return (NULL);
 }

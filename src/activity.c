@@ -12,50 +12,41 @@
 
 #include "../includes/philo.h"
 
-static bool	solo(t_philo *philo)
+void	sleeping(t_philo *philo)
 {
-	if (philo->data->n_philos == 1)
-	{
-		pthread_mutex_lock(philo->fork[0]);
-		logs(philo, FORK);
-		pthread_mutex_unlock(philo->fork[0]);
-		pthread_mutex_lock(&philo->data->finish_lock);
-		philo->data->solo = true;
-		pthread_mutex_unlock(&philo->data->finish_lock);
-		return (true);
-	}
-	return (false);
+	logs(philo, SLEEPING);
+	wait_time(philo, philo->data->sleep_t);
+}
+
+void	thinking(t_philo *philo)
+{
+	logs(philo, THINKING);
+	wait_time(philo, 1);
 }
 
 static bool	get_fork(t_philo *philo, int fork)
 {
 	pthread_mutex_lock(philo->fork[fork]);
-	pthread_mutex_lock(&philo->data->finish_lock);
-	if (philo->data->finish)
+	if (is_dead(philo))
 	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
 		pthread_mutex_unlock(philo->fork[fork]);
 		return (false);
 	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
 	logs(philo, FORK);
 	return (true);
 }
 
-//right_fork = 0 | left_fork = 1
 static bool	get_forks(t_philo *philo)
 {
 	int	fork1;
 	int	fork2;
 
-	fork1 = 1;
-	fork2 = 0;
-	if (solo(philo))
-		return (false);
+	fork1 = LEFT;
+	fork2 = RIGHT;
 	if (philo->id % 2 == 0)
 	{
-		fork1 = 0;
-		fork2 = 1;
+		fork1 = RIGHT;
+		fork2 = LEFT;
 	}
 	if (!get_fork(philo, fork1))
 		return (false);
@@ -67,37 +58,22 @@ static bool	get_forks(t_philo *philo)
 	return (true);
 }
 
-static void	sleeping(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->fork[1]);
-	pthread_mutex_unlock(philo->fork[0]);
-	if (is_dead(philo))
-		return ;
-	logs(philo, SLEEPING);
-	wait_time(philo, philo->data->sleep_t);
-	logs(philo, THINKING);
-	if (is_dead(philo))
-		return ;
-	if (philo->data->n_philos == 5
-		|| (philo->data->n_philos == 3 && philo->id == 3))
-		wait_time(philo, philo->data->eat_t);
-	if (philo->data->n_philos % 2 != 0 && philo->id % 2 == 0)
-		wait_time(philo, philo->id * (1 + 1 / philo->data->n_philos));
-	else
-		wait_time(philo, 1);
-}
-
 void	eating(t_philo *philo)
 {
 	if (!get_forks(philo))
 		return ;
 	pthread_mutex_lock(&philo->lock);
-	philo->status = EATING;
-	logs(philo, EATING);
 	philo->death_t = get_time() + philo->data->death_t;
-	wait_time(philo, philo->data->eat_t);
-	philo->status = 0;
-	philo->meals++;
 	pthread_mutex_unlock(&philo->lock);
-	sleeping(philo);
+	logs(philo, EATING);
+	philo->meals++;
+	wait_time(philo, philo->data->eat_t);
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_unlock(philo->fork[LEFT]);
+		pthread_mutex_unlock(philo->fork[RIGHT]);
+		return ;
+	}
+	pthread_mutex_unlock(philo->fork[RIGHT]);
+	pthread_mutex_unlock(philo->fork[LEFT]);
 }

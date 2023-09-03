@@ -20,10 +20,8 @@ static void	init_philos(t_data *data)
 	while (++i < data->n_philos)
 	{
 		data->philos[i].data = data;
-		data->philos[i].status = 0;
 		data->philos[i].id = i + 1;
 		data->philos[i].meals = 0;
-		data->philos[i].status = 0;
 		data->philos[i].full = false;
 		data->philos[i].death_t = data->death_t;
 		pthread_mutex_init(&data->philos[i].lock, NULL);
@@ -43,7 +41,6 @@ static t_data	*init_threads(t_data *data)
 	u_int64_t	i;
 
 	data->finish = false;
-	data->solo = false;
 	data->philos_full = 0;
 	data->table = malloc(data->n_philos * sizeof(pthread_t));
 	data->forks = malloc(data->n_philos * sizeof(pthread_mutex_t));

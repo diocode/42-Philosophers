@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/03 14:39:00 by digoncal          #+#    #+#             */
-/*   Updated: 2023/08/07 15:56:32 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/09/03 14:31:29 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,11 @@
 
 /* ---------- MACROS ---------- */
 
+enum e_forks{
+	LEFT,
+	RIGHT,
+};
+
 enum e_actions{
 	DEATH,
 	EATING,
@@ -40,9 +45,7 @@ struct	s_data;
 typedef struct s_philo
 {
 	struct s_data	*data;
-	pthread_t		thread;
 	u_int64_t		id;
-	int				status;
 	u_int64_t		meals;
 	u_int64_t		death_t;
 	bool			full;
@@ -62,7 +65,6 @@ typedef struct s_data
 	u_int64_t		start_t;
 	u_int64_t		philos_full;
 	bool			finish;
-	bool			solo;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	log;
@@ -72,23 +74,26 @@ typedef struct s_data
 /*---------- FUNCTIONS ----------*/
 
 //activity
-void		logs(t_philo *p, int status);
 void		eating(t_philo *philo);
+void		sleeping(t_philo *philo);
+void		thinking(t_philo *philo);
+
+//checks
+int			check_input(char **av);
+bool		is_solo(t_philo *philo);
+bool		is_dead(t_philo *philo);
 
 //routines
 void		*routine(void *philo_ptr);
+void		logs(t_philo *p, int status);
 
 //utils
-bool		is_dead(t_philo *philo);
-int			check_input(char **av);
-long		ft_atol(const char *nptr);
 u_int64_t	get_time(void);
 void		wait_time(t_philo *philo, u_int64_t time);
+long		ft_atol(const char *nptr);
+void		free_data(t_data *data);
 
 //init
 t_data		*init_data(int ac, char **av);
-
-//free
-void		free_data(t_data *data);
 
 #endif

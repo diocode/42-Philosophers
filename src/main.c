@@ -12,29 +12,6 @@
 
 #include "../includes/philo.h"
 
-void	logs(t_philo *p, int status)
-{
-	pthread_mutex_lock(&p->data->finish_lock);
-	pthread_mutex_lock(&p->data->log);
-	if ((status == DEATH || status == FULL) && !p->data->finish)
-	{
-		if (status == DEATH)
-			printf("%lu %lu died\n", get_time() - p->data->start_t, p->id);
-		p->data->finish = true;
-	}
-	else if (status == EATING && !p->data->finish)
-		printf("%lu %lu is eating\n", get_time() - p->data->start_t, p->id);
-	else if (status == SLEEPING && !p->data->finish)
-		printf("%lu %lu is sleeping\n", get_time() - p->data->start_t, p->id);
-	else if (status == THINKING && !p->data->finish)
-		printf("%lu %lu is thinking\n", get_time() - p->data->start_t, p->id);
-	else if (status == FORK && !p->data->finish)
-		printf("%lu %lu has taken a fork\n",
-			get_time() - p->data->start_t, p->id);
-	pthread_mutex_unlock(&p->data->log);
-	pthread_mutex_unlock(&p->data->finish_lock);
-}
-
 static int	reunion(t_data *data)
 {
 	u_int64_t	n;
