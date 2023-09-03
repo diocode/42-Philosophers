@@ -12,6 +12,34 @@
 
 #include "../includes/philo.h"
 
+static void	init_forks(t_data *data, u_int64_t i)
+{
+	while (i < (data->n_philos - 1))
+	{
+		if (i % 2)
+		{
+			data->philos[i].fork[LEFT] = &data->forks[i - 1];
+			data->philos[i].fork[RIGHT] = &data->forks[i];
+		}
+		else
+		{
+			data->philos[i].fork[LEFT] = &data->forks[i];
+			data->philos[i].fork[RIGHT] = &data->forks[i + 1];
+		}
+		i++;
+	}
+	if (i % 2)
+	{
+		data->philos[i].fork[LEFT] = &data->forks[i - 1];
+		data->philos[i].fork[RIGHT] = &data->forks[i];
+	}
+	else
+	{
+		data->philos[i].fork[LEFT] = &data->forks[i];
+		data->philos[i].fork[RIGHT] = &data->forks[0];
+	}
+}
+
 static void	init_philos(t_data *data)
 {
 	u_int64_t	i;
@@ -22,18 +50,12 @@ static void	init_philos(t_data *data)
 		data->philos[i].data = data;
 		data->philos[i].id = i + 1;
 		data->philos[i].meals = 0;
+		data->philos[i].status = -1;
 		data->philos[i].full = false;
 		data->philos[i].death_t = data->death_t;
 		pthread_mutex_init(&data->philos[i].lock, NULL);
 	}
-	data->philos[0].fork[1] = &data->forks[0];
-	data->philos[0].fork[0] = &data->forks[data->n_philos - 1];
-	i = 0;
-	while (++i < data->n_philos)
-	{
-		data->philos[i].fork[1] = &data->forks[i];
-		data->philos[i].fork[0] = &data->forks[i - 1];
-	}
+	init_forks(data, 0);
 }
 
 static t_data	*init_threads(t_data *data)

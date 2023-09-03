@@ -48,6 +48,7 @@ typedef struct s_philo
 	u_int64_t		id;
 	u_int64_t		meals;
 	u_int64_t		death_t;
+	int				status;
 	bool			full;
 	pthread_mutex_t	lock;
 	pthread_mutex_t	*fork[2];

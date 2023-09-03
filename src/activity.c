@@ -14,14 +14,22 @@
 
 void	sleeping(t_philo *philo)
 {
-	logs(philo, SLEEPING);
-	wait_time(philo, philo->data->sleep_t);
+	if (!is_dead(philo) && philo->status != SLEEPING)
+	{
+		philo->status = SLEEPING;
+		logs(philo, philo->status);
+		wait_time(philo, philo->data->sleep_t);
+	}
 }
 
 void	thinking(t_philo *philo)
 {
-	logs(philo, THINKING);
-	wait_time(philo, 1);
+	if (!is_dead(philo) && philo->status != THINKING)
+	{
+		philo->status = THINKING;
+		logs(philo, philo->status);
+		wait_time(philo, 5);
+	}
 }
 
 static bool	get_fork(t_philo *philo, int fork)
@@ -38,21 +46,11 @@ static bool	get_fork(t_philo *philo, int fork)
 
 static bool	get_forks(t_philo *philo)
 {
-	int	fork1;
-	int	fork2;
-
-	fork1 = LEFT;
-	fork2 = RIGHT;
-	if (philo->id % 2 == 0)
-	{
-		fork1 = RIGHT;
-		fork2 = LEFT;
-	}
-	if (!get_fork(philo, fork1))
+	if (!get_fork(philo, LEFT))
 		return (false);
-	if (!get_fork(philo, fork2))
+	if (!get_fork(philo, RIGHT))
 	{
-		pthread_mutex_unlock(philo->fork[fork1]);
+		pthread_mutex_unlock(philo->fork[LEFT]);
 		return (false);
 	}
 	return (true);
@@ -65,15 +63,10 @@ void	eating(t_philo *philo)
 	pthread_mutex_lock(&philo->lock);
 	philo->death_t = get_time() + philo->data->death_t;
 	pthread_mutex_unlock(&philo->lock);
-	logs(philo, EATING);
+	philo->status = EATING;
+	logs(philo, philo->status);
 	philo->meals++;
 	wait_time(philo, philo->data->eat_t);
-	if (philo->id % 2 == 0)
-	{
-		pthread_mutex_unlock(philo->fork[LEFT]);
-		pthread_mutex_unlock(philo->fork[RIGHT]);
-		return ;
-	}
-	pthread_mutex_unlock(philo->fork[RIGHT]);
 	pthread_mutex_unlock(philo->fork[LEFT]);
+	pthread_mutex_unlock(philo->fork[RIGHT]);
 }

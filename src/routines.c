@@ -37,17 +37,15 @@ void	*routine(void *philo_ptr)
 	pthread_mutex_lock(&philo->lock);
 	philo->death_t = philo->data->start_t + philo->data->death_t;
 	pthread_mutex_unlock(&philo->lock);
-	if (philo->id % 2 == 0)
+	if (philo->id % 2 == 0 || philo->id == philo->data->n_philos)
 		thinking(philo);
 	if (is_solo(philo))
 		return (NULL);
 	while (!is_dead(philo))
 	{
 		eating(philo);
-		if (!is_dead(philo))
-			sleeping(philo);
-		if (!is_dead(philo))
-			thinking(philo);
+		sleeping(philo);
+		thinking(philo);
 	}
 	return (NULL);
 }
