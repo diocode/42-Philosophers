@@ -24,6 +24,9 @@ static void	is_full(t_philo	*philo)
 
 bool	is_dead(t_philo *philo)
 {
+	bool	dead;
+
+	dead = false;
 	pthread_mutex_lock(&philo->lock);
 	pthread_mutex_lock(&philo->data->finish_lock);
 	if (get_time() >= philo->death_t || philo->data->finish)
@@ -36,10 +39,11 @@ bool	is_dead(t_philo *philo)
 	is_full(philo);
 	if (philo->data->philos_full == philo->data->n_philos)
 		philo->data->finish = true;
+	dead = philo->data->finish;
 	pthread_mutex_unlock(&philo->data->lock);
 	pthread_mutex_unlock(&philo->data->finish_lock);
 	pthread_mutex_unlock(&philo->lock);
-	return (philo->data->finish);
+	return (dead);
 }
 
 bool	is_solo(t_philo *philo)
