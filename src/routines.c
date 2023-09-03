@@ -60,6 +60,11 @@ void	*routine(void *philo_ptr)
 	while (!philo->data->finish && !philo->data->solo)
 	{
 		pthread_mutex_unlock(&philo->data->finish_lock);
+		if (philo->id % 2 != 0)
+		{
+			logs(philo, THINKING);
+			wait_time(philo, 1);
+		}
 		eating(philo);
 		logs(philo, THINKING);
 		pthread_mutex_lock(&philo->data->finish_lock);

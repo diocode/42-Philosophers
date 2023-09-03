@@ -6,7 +6,7 @@
 /*   By: digoncal <digoncal@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/09 22:39:24 by digoncal          #+#    #+#             */
-/*   Updated: 2023/09/02 01:15:53 by digoncal         ###   ########.fr       */
+/*   Updated: 2023/09/02 13:21:11 by digoncal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,15 +71,20 @@ static void	sleeping(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->fork[1]);
 	pthread_mutex_unlock(philo->fork[0]);
-	pthread_mutex_lock(&philo->data->finish_lock);
-	if (philo->data->finish)
-	{
-		pthread_mutex_unlock(&philo->data->finish_lock);
+	if (is_dead(philo))
 		return ;
-	}
-	pthread_mutex_unlock(&philo->data->finish_lock);
 	logs(philo, SLEEPING);
 	wait_time(philo, philo->data->sleep_t);
+	logs(philo, THINKING);
+	if (is_dead(philo))
+		return ;
+	if (philo->data->n_philos == 5
+		|| (philo->data->n_philos == 3 && philo->id == 3))
+		wait_time(philo, philo->data->eat_t);
+	if (philo->data->n_philos % 2 != 0 && philo->id % 2 == 0)
+		wait_time(philo, philo->id * (1 + 1 / philo->data->n_philos));
+	else
+		wait_time(philo, 1);
 }
 
 void	eating(t_philo *philo)

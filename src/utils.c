@@ -12,6 +12,18 @@
 
 #include "../includes/philo.h"
 
+bool	is_dead(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->data->finish_lock);
+	if (philo->data->finish)
+	{
+		pthread_mutex_unlock(&philo->data->finish_lock);
+		return (true);
+	}
+	pthread_mutex_unlock(&philo->data->finish_lock);
+	return (false);
+}
+
 void	wait_time(t_philo *philo, u_int64_t time)
 {
 	if ((get_time() + time) >= philo->death_t)
@@ -78,29 +90,7 @@ int	check_input(char **av)
 		if (tmp < 0 || tmp > 4294967295)
 			return (1);
 	}
+	if (av[2][0] == '0' && !av[2][1])
+		return (1);
 	return (0);
-}
-
-void	free_data(t_data *data)
-{
-	u_int64_t	i;
-
-	if (!data)
-		return ;
-	i = -1;
-	while (++i < data->n_philos)
-	{
-		pthread_mutex_destroy(&data->forks[i]);
-		pthread_mutex_destroy(&data->philos[i].lock);
-	}
-	pthread_mutex_destroy(&data->lock);
-	pthread_mutex_destroy(&data->log);
-	pthread_mutex_destroy(&data->finish_lock);
-	if (data->table)
-		free(data->table);
-	if (data->philos)
-		free(data->philos);
-	if (data->forks)
-		free(data->forks);
-	free(data);
 }

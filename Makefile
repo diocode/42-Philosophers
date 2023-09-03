@@ -12,10 +12,10 @@
 
 CC = cc
 #CFLAGS = -g -Wall -Wextra -Werror -L. -lpthread -g3 -fsanitize=thread -O3 -march=native
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 NAME = philo
 
-SRC = src/main.c src/init.c src/utils.c src/routines.c src/activity.c
+SRC = src/main.c src/init.c  src/free.c src/utils.c src/routines.c src/activity.c
 
 OBJ = $(SRC:.c=.o)
 
