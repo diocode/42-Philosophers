@@ -39,12 +39,12 @@ In summary, this project involves creating a C program that simulates philosophe
 #### COMPILATION AND EXECUTION
 #### 1º - Clone the repository
 ```bash
-$ ./git clone git@github.com:diocode/philosophers.git
+$ ./git clone git@github.com:diocode/42-Philosophers.git
 ```
 
 #### 2º - Enter the project folder and run `make`
 ```bash
-$ ./cd philosophers
+$ ./cd 42-Philosophers
 $ ./make
 ```
 
